@@ -33,6 +33,10 @@ func (m *Matrix) valueRand() {
 		m.answer = append(m.answer, float64(rand.Intn(15)))
 	}
 }
+func (m *Matrix) valueVyrozhd() {
+	m.answer = make([]float64, m.cols, m.rows)
+	//todo: добавить генерацию массива
+}
 func (m *Matrix) printMatrix(text string) {
 
 	fmt.Println(text)
@@ -74,6 +78,13 @@ func (m *Matrix) rowsSwap(rowFirst, rowLast int) {
 
 func (m *Matrix) toSingleMatrix(col, row int) {
 	deleter := m.value[row][col]
+
+	for q := 0; q < m.rows; q++ {
+		if q > row && m.value[q][col] == 0 {
+			panic("Матрица вырождена...")
+		}
+	}
+
 	for i := 0; i < m.cols; i++ {
 		m.value[row][i] = math.Round(m.value[row][i]/deleter*100) / 100
 	}

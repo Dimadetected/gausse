@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 func main() {
 	m := NewMatrix(5, 5)
 	m.valueRand()
@@ -15,6 +13,4 @@ func main() {
 		m.printMatrix("вывод матрицы после прохода столбца")
 	}
 	m.printMatrix("Вывод итоговой матрицы")
-	fmt.Println(m.value)
-	fmt.Println(m.answer)
 }
