@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
-	"strconv"
 )
 
 type MatrixFunctions interface {
@@ -34,7 +33,16 @@ func (m *Matrix) valueRand() {
 	}
 }
 func (m *Matrix) valueVyrozhd() {
-	m.answer = make([]float64, m.cols, m.rows)
+	m.answer = []float64{
+		1, 0, 0, 0, 0,
+	}
+	m.value = [][]float64{
+		{1, 0, 0, 0, 0},
+		{0, 2, 3, 4, 1},
+		{0, 3, 5, 9, 0},
+		{0, 0, 3, 1, 1},
+		{0, 2, 1, 2, 1},
+	}
 	//todo: добавить генерацию массива
 }
 func (m *Matrix) printMatrix(text string) {
@@ -44,9 +52,9 @@ func (m *Matrix) printMatrix(text string) {
 	for i := 0; i < m.cols; i++ {
 		str := ""
 		for j := 0; j < m.rows; j++ {
-			str += strconv.FormatFloat(m.value[i][j], 'f', 2, 64) + "  "
+			str += fmt.Sprintf("%5.2f  ", m.value[i][j])
 		}
-		str += "|  " + strconv.FormatFloat(m.answer[i], 'f', 2, 64)
+		str += "|  " + fmt.Sprintf("%5.2f  ", m.answer[i])
 		fmt.Println(str)
 	}
 }
@@ -90,7 +98,7 @@ func (m *Matrix) toSingleMatrix(col, row int) {
 	}
 
 	m.answer[row] = math.Round(m.answer[row]/deleter*100) / 100
-	m.printMatrix("Матрица с единицей на главной диагонали: ")
+	//m.printMatrix("Матрица с единицей на главной диагонали: ")
 
 	for i := 0; i < m.rows; i++ {
 		if i != row {
