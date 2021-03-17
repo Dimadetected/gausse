@@ -37,11 +37,16 @@ func (m *Matrix) valueVyrozhd() {
 		1, 0, 0, 0, 0,
 	}
 	m.value = [][]float64{
-		{1, 0, 0, 0, 0},
-		{0, 2, 3, 4, 1},
-		{0, 3, 5, 9, 0},
-		{0, 0, 3, 1, 1},
-		{0, 2, 1, 2, 1},
+		//{1, 0, 0, 0, 0},
+		//{0, 1, 0, 0, 0},
+		//{0, 0, 1, 0, 0},
+		//{0, 0, 0, 1, 0},
+		//{0, 0, 0, 0, 1},
+		{1, 2, 3, 4, 5},
+		{6, 7, 8, 9, 10},
+		{11, 12, 13, 14, 15},
+		{16, 17, 18, 19, 20},
+		{27, 29, 31, 33, 35},
 	}
 	//todo: добавить генерацию массива
 }
@@ -59,13 +64,16 @@ func (m *Matrix) printMatrix(text string) {
 	}
 }
 func (m *Matrix) maxColValue(col int) (float64, int) {
-	maxIndex := 0
+	maxIndex := col
 	max := m.value[maxIndex][col]
-	for j := 0; j < m.rows; j++ {
+	for j := col; j < m.rows; j++ {
 		if max < math.Abs(m.value[j][col]) {
 			max = math.Abs(m.value[j][col])
 			maxIndex = j
 		}
+	}
+	if math.Abs(max) < 0.0000000000001 {
+		panic("Матрица вырожденна...")
 	}
 	return max, maxIndex
 }
@@ -86,12 +94,6 @@ func (m *Matrix) rowsSwap(rowFirst, rowLast int) {
 
 func (m *Matrix) toSingleMatrix(col, row int) {
 	deleter := m.value[row][col]
-
-	for q := 0; q < m.rows; q++ {
-		if q > row && m.value[q][col] == 0 {
-			panic("Матрица вырождена...")
-		}
-	}
 
 	for i := 0; i < m.cols; i++ {
 		m.value[row][i] = math.Round(m.value[row][i]/deleter*100) / 100
