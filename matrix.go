@@ -16,12 +16,34 @@ type MatrixFunctions interface {
 
 type Matrix struct {
 	value      [][]float64
-	answer     []float64
+	answer     [][]float64
 	cols, rows int
 
 	MatrixFunctions
 }
 
+func (m *Matrix) getValue() [][]float64 {
+	v := make([][]float64, 0, 0)
+	for i := range m.value {
+		v1 := make([]float64, 0, 0)
+		for _, v2 := range m.value[i] {
+			v1 = append(v1, v2)
+		}
+		v = append(v, v1)
+	}
+	return v
+}
+func (m *Matrix) getAnswer() [][]float64 {
+	v := make([][]float64, 0, 0)
+	for i := range m.answer {
+		v1 := make([]float64, 0, 0)
+		for _, v2 := range m.answer[i] {
+			v1 = append(v1, v2)
+		}
+		v = append(v, v1)
+	}
+	return v
+}
 func (m *Matrix) valueRand() {
 	for i := 0; i < m.cols; i++ {
 		newArray := make([]float64, m.rows, m.rows)
@@ -29,12 +51,21 @@ func (m *Matrix) valueRand() {
 			newArray[j] = float64(rand.Intn(15))
 		}
 		m.value = append(m.value, newArray)
-		m.answer = append(m.answer, float64(rand.Intn(15)))
+
+		arr := make([]float64, m.rows)
+		for j := 0; j < m.rows; j++ {
+			arr[j] = float64(rand.Intn(15))
+		}
+		m.answer = append(m.answer, arr)
 	}
 }
 func (m *Matrix) valueVyrozhd() {
-	m.answer = []float64{
-		1, 0, 0, 0, 0,
+	m.answer = [][]float64{
+		{1, 0, 3, 0, 2},
+		{1, 2, 3, 4, 0},
+		{1, 0, 5, 0, 0},
+		{7, 5, 0, 9, 0},
+		{4, 0, 0, 0, 0},
 	}
 	m.value = [][]float64{
 		//{1, 0, 0, 0, 0},
@@ -98,8 +129,9 @@ func (m *Matrix) toSingleMatrix(col, row int) {
 	for i := 0; i < m.cols; i++ {
 		m.value[row][i] = math.Round(m.value[row][i]/deleter*100) / 100
 	}
-
-	m.answer[row] = math.Round(m.answer[row]/deleter*100) / 100
+	for i := range m.answer[row] {
+		m.answer[row][i] = math.Round(m.answer[row][i]/deleter*100) / 100
+	}
 	//m.printMatrix("Матрица с единицей на главной диагонали: ")
 
 	for i := 0; i < m.rows; i++ {
@@ -114,7 +146,9 @@ func (m *Matrix) rowsDifferent(firstRow, secondRow, col int) {
 	for i := 0; i < m.cols; i++ {
 		m.value[secondRow][i] = m.value[secondRow][i] - (m.value[firstRow][i] * kef)
 	}
-	m.answer[secondRow] = m.answer[secondRow] - (m.answer[firstRow] * kef)
+	for k := range m.answer[secondRow] {
+		m.answer[secondRow][k] = m.answer[secondRow][k] - (m.answer[firstRow][k] * kef)
+	}
 }
 
 func NewMatrix(cols, rows int) *Matrix {
@@ -122,6 +156,14 @@ func NewMatrix(cols, rows int) *Matrix {
 		cols:   cols,
 		rows:   rows,
 		value:  make([][]float64, 0, 0),
-		answer: make([]float64, 0, 0),
+		answer: make([][]float64, 0, 0),
+	}
+}
+
+func (m *Matrix) spoil() {
+	for k, v := range m.answer {
+		for k1 := range v {
+			m.answer[k][k1] = m.answer[k][k1] - rand.Float64()*(0.01-0.001)
+		}
 	}
 }
