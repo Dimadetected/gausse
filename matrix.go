@@ -52,11 +52,13 @@ func (m *Matrix) valueRand() {
 		}
 		m.value = append(m.value, newArray)
 
-		arr := make([]float64, m.rows)
-		for j := 0; j < m.rows; j++ {
-			arr[j] = float64(rand.Intn(15))
+		m.answer = [][]float64{
+			{1, 0, 0, 0, 0},
+			{0, 1, 0, 0, 0},
+			{0, 0, 1, 0, 0},
+			{0, 0, 0, 1, 0},
+			{0, 0, 0, 0, 1},
 		}
-		m.answer = append(m.answer, arr)
 	}
 }
 func (m *Matrix) valueVyrozhd() {
@@ -127,10 +129,10 @@ func (m *Matrix) toSingleMatrix(col, row int) {
 	deleter := m.value[row][col]
 
 	for i := 0; i < m.cols; i++ {
-		m.value[row][i] = math.Round(m.value[row][i]/deleter*100) / 100
+		m.value[row][i] = m.value[row][i] / deleter
 	}
 	for i := range m.answer[row] {
-		m.answer[row][i] = math.Round(m.answer[row][i]/deleter*100) / 100
+		m.answer[row][i] = m.answer[row][i] / deleter
 	}
 	//m.printMatrix("Матрица с единицей на главной диагонали: ")
 
