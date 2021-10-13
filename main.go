@@ -2,21 +2,89 @@ package main
 
 import (
 	"fmt"
+	"github.com/rgeoghegan/tabulate"
 	"math"
 	"strconv"
 	"time"
 )
 
-func main() {
-	A := [][]float64{
-		{1, 0.5, 0.33333333, 0.25, 0.2},
-		{0.5, 0.33333333, 0.25, 0.2, 0.16666667},
-		{0.33333333, 0.25, 0.2, 0.16666667, 0.14285714},
-		{0.25, 0.2, 0.16666667, 0.14285714, 0.125},
-		{0.2, 0.16666667, 0.14285714, 0.125, 0.11111111},
+type Print struct {
+	Step float64
+	X    float64
+	Y    float64
+	Err  float64
+}
+
+var (
+	eps = 1e-6
+	h0  = 0.3
+	x   = 0.0
+	X   = 1.0
+	y   = 0.0
+)
+
+func f(x, y float64) float64 {
+	return math.Exp(x) + y
+}
+
+func step(x, y, h float64) float64 {
+	g0 := h * f(x, y)
+	g1 := h * f(x+h/2, y+g0/2)
+	g2 := h * f(x+h/2, y+g1/2)
+	g3 := h * f(x+h, y+g2)
+	deltaY := (g0 + 2*g1 + 2*g2 + g3) / 6
+	return y + deltaY
+}
+
+func jump(x, y float64) (float64, float64) {
+	h := h0
+	yh := step(x, y, h)
+	for {
+		yh0 := step(x, y, h/2)
+		yh1 := step(x+h/2, yh0, h/2)
+		if math.Abs(yh-yh1) <= eps {
+			return yh, h
+		}
+		h = h / 2
+		yh = yh0
 	}
-	gradient(A)
+}
+func main() {
+	var h float64
+	res := make([]float64, 0)
+	i := 0.0
+	prints := []*Print{}
+	for X-x > eps {
+		err := math.Abs(math.Exp(x)*x - y)
+		res = append(res, i, x, y, err)
+		prints = append(prints, &Print{i, x, y, err})
+		y, h = jump(x, y)
+		x += h
+		if X-x < h0 {
+			h0 = X - x
+		}
+		i += 1
+	}
+	err := math.Abs(math.Exp(x)*x - y)
+	res = append(res, i, x, y, err)
+	prints = append(prints, &Print{i, x, y, err})
+
+	layout := &tabulate.Layout{Format: tabulate.GridFormat}
+	table, erro := tabulate.Tabulate(prints, layout)
+	if erro != nil {
+		panic(err)
+	}
+	fmt.Println(table)
 	return
+	//A := [][]float64{
+	//	{1, 0.5, 0.33333333, 0.25, 0.2},
+	//	{0.5, 0.33333333, 0.25, 0.2, 0.16666667},
+	//	{0.33333333, 0.25, 0.2, 0.16666667, 0.14285714},
+	//	{0.25, 0.2, 0.16666667, 0.14285714, 0.125},
+	//	{0.2, 0.16666667, 0.14285714, 0.125, 0.11111111},
+	//}
+	//gradient(A)
+	//return
 
 	var a string
 	//fmt.Println("Введите \n 1)Если нужно обычную матрицу \n 2)Если нужно вырожденную матрицу")
@@ -25,8 +93,22 @@ func main() {
 	if a == "1" {
 
 		m := NewMatrix(5, 5)
-		m.valueRand()
+		//m.valueRand()
 		//fmt.Println("Обычная матрица: ")
+		m.value = [][]float64{
+			{11, 12, 2, 14, 1},
+			{3, 10, 5, 1, 0},
+			{14, 1, 12, 14, 13},
+			{14, 6, 5, 2, 11},
+			{5, 6, 8, 13, 12},
+		}
+		m.answer = [][]float64{
+			{1, 0, 0, 0, 0},
+			{0, 1, 0, 0, 0},
+			{0, 0, 1, 0, 0},
+			{0, 0, 0, 1, 0},
+			{0, 0, 0, 0, 1},
+		}
 		m.printMatrix("Заполнили матрицу")
 		A := m.getValue()
 		for j := 0; j < m.cols; j++ {
