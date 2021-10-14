@@ -1,16 +1,18 @@
 package main
 
 import (
+	"fmt"
+	"github.com/rgeoghegan/tabulate"
 	"math"
 )
 
 type Print struct {
-	Step    float64
-	Value   float64
-	U       float64
-	UAnswer float64
-	V       float64
-	VAnswer float64
+	Step   float64
+	Value  float64
+	U      float64
+	UValue float64
+	V      float64
+	VValue float64
 }
 
 var (
@@ -89,12 +91,23 @@ func main() {
 		u = uN
 		v = vN
 		answ = append(answ, &Print{
-			Step:    h,
-			Value:   x,
-			U:       u,
-			UAnswer: uFunc(x) - u,
-			V:       v,
-			VAnswer: vFunc(x) - v,
+			Step:   h,
+			Value:  x,
+			U:      u,
+			UValue: uFunc(x) - u,
+			V:      v,
+			VValue: vFunc(x) - v,
 		})
+
+		if xn-x < h0 {
+			h0 = xn - x
+		}
 	}
+
+	layout := &tabulate.Layout{Format: tabulate.GridFormat}
+	table, err := tabulate.Tabulate(answ, layout)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(table)
 }
