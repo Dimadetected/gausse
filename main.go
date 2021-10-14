@@ -17,7 +17,7 @@ type Print struct {
 }
 
 var (
-//eps = 1e-6
+	eps = 1e-9
 )
 
 //dichotomy
@@ -47,12 +47,11 @@ func dichotomy(f func(ksi float64) float64, a, b, eps float64) float64 {
 	return (a + b) / 2
 }
 
-//functions
 func fFunc(x, u, v float64) float64 {
 	return u - v + math.Exp(x)*(1+x*x)
 }
 func gFunc(x, u, v float64) float64 {
-	return u + v + x + math.Exp(x)
+	return u + v + x*math.Exp(x)
 }
 func uFunc(x float64) float64 {
 	return x * math.Exp(x)
@@ -62,11 +61,11 @@ func vFunc(x float64) float64 {
 }
 
 //функция находит приближенное значение решения диф задачи в точке х
-func step(x, u, v, h float64, fFunc, gFunc func(float64, float64, float64) float64) (float64, float64) {
+func step(x, u, v, h float64) (float64, float64) {
 
 	phi0 := h * fFunc(x, u, v)
 	psi0 := h * gFunc(x, u, v)
-	fmt.Println("phi,psi", fFunc(x, u, v), gFunc(x, u, v))
+
 	phi1 := h * fFunc(x+h/2, u+phi0/2, v+psi0/2)
 	psi1 := h * gFunc(x+h/2, u+phi0/2, v+psi0/2)
 
@@ -75,7 +74,6 @@ func step(x, u, v, h float64, fFunc, gFunc func(float64, float64, float64) float
 
 	phi3 := h * fFunc(x+h, u+phi2, v+psi2)
 	psi3 := h * gFunc(x+h, u+phi2, v+psi2)
-
 	u = u + (phi0+2*phi1+2*phi2+phi3)/6
 	v = v + (psi0+2*psi1+2*psi2+psi3)/6
 	return u, v
@@ -85,28 +83,30 @@ func step(x, u, v, h float64, fFunc, gFunc func(float64, float64, float64) float
    Функция формирует сетку и в узлах этой сетки находит приближенные значения
     (находит шаг и приближ значение с точностью eps)
 */
-func jump(x, u, v, h0 float64, fFunc, gFunc func(float64, float64, float64) float64, eps float64) (float64, float64, float64) {
+func jump(x, u, v, h0 float64) (float64, float64, float64) {
 	h := h0
-	sU1, sV1 := step(x, u, v, h, fFunc, gFunc)
-	sU05, sV05 := step(x, u, v, h/2, fFunc, gFunc)
-	sU2, sV2 := step(x+h/2, sU05, sV05, h/2, fFunc, gFunc)
+	sU1, sV1 := step(x, u, v, h)
+	sU05, sV05 := step(x, u, v, h/2)
+	sU2, sV2 := step(x+h/2, sU05, sV05, h/2)
+	fmt.Println(h, math.Abs(sU1-sU2) > eps, math.Abs(sV1-sV2) > eps, math.Abs(sV1-sV2), sV1, sV2)
 	for math.Abs(sU1-sU2) > eps && math.Abs(sV1-sV2) > eps {
+		fmt.Println(h, math.Abs(sU1-sU2) > eps, math.Abs(sV1-sV2) > eps)
 		h = h / 2
 		sU1 = sU05
 		sV1 = sV05
 
-		sU05, sV05 = step(x, u, v, h/2, fFunc, gFunc)
-		sU2, sV2 = step(x+(h/2), sU05, sV05, h/2, fFunc, gFunc)
+		sU05, sV05 = step(x, u, v, h/2)
+		sU2, sV2 = step(x+(h/2), sU05, sV05, h/2)
 	}
 	return h, sU1, sV1
 }
-func rungeKutta(a, b, u, v, h0 float64, fFunc, gFunc func(float64, float64, float64) float64, eps float64, debug bool) (float64, float64) {
+func rungeKutta(a, b, u, v, h0 float64, debug bool) (float64, float64) {
 	iter := 1.0
 	x := a
 	answ := []*Print{}
 	var h float64
 	for x < b {
-		h, u, v = jump(x, u, v, h0, fFunc, gFunc, eps)
+		h, u, v = jump(x, u, v, h0)
 		fmt.Println("huv:", h, u, v)
 		x = x + h
 		answ = append(answ, &Print{
@@ -137,12 +137,11 @@ func rungeKutta(a, b, u, v, h0 float64, fFunc, gFunc func(float64, float64, floa
 
 func F(ksi float64, D []float64, h float64, alpha, betta, gamma []float64, f, g func(float64, float64, float64) float64) float64 {
 	v := (gamma[0] - alpha[0]*ksi) / betta[0]
-	u, v := rungeKutta(D[0], D[1], ksi, v, h, f, g, 1e-5, false)
+	u, v := rungeKutta(D[0], D[1], ksi, v, h, false)
 	fmt.Println("u,v: ", u, v)
 	return alpha[0]*u + betta[1]*v - gamma[1]
 }
 func main() {
-	eps := 1e-9
 	D := []float64{0, 1}
 	h := 0.3
 
@@ -175,7 +174,7 @@ func main() {
 	fmt.Printf("Запуск автоматической стрельбы...")
 	u := ksi
 	v := (gamma[0] - alpha[0]*ksi) / betta[0]
-	u, v = rungeKutta(D[0], D[1], u, v, h, fFunc, gFunc, eps, false)
+	u, v = rungeKutta(D[0], D[1], u, v, h, true)
 	fmt.Println(u, v)
 }
 func FDihot(ksi float64) float64 {
