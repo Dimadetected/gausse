@@ -36,8 +36,9 @@ func dichotomy(f func(ksi float64) float64, a, b, eps float64) float64 {
 	k := 0
 	for (b-a)/2 > eps {
 		c := (a + b) / 2
-		fmt.Println(a, b, f(a), f(c))
-		if f(a)*f(c) <= 0 {
+		fa := f(a)
+		fc := f(c)
+		if fa*fc <= 0 {
 			b = c
 		} else {
 			a = c
@@ -88,9 +89,7 @@ func jump(x, u, v, h0 float64) (float64, float64, float64) {
 	sU1, sV1 := step(x, u, v, h)
 	sU05, sV05 := step(x, u, v, h/2)
 	sU2, sV2 := step(x+h/2, sU05, sV05, h/2)
-	fmt.Println(h, math.Abs(sU1-sU2) > eps, math.Abs(sV1-sV2) > eps, math.Abs(sV1-sV2), sV1, sV2)
-	for math.Abs(sU1-sU2) > eps && math.Abs(sV1-sV2) > eps {
-		fmt.Println(h, math.Abs(sU1-sU2) > eps, math.Abs(sV1-sV2) > eps)
+	for math.Abs(sU1-sU2) > eps || math.Abs(sV1-sV2) > eps {
 		h = h / 2
 		sU1 = sU05
 		sV1 = sV05
@@ -107,7 +106,6 @@ func rungeKutta(a, b, u, v, h0 float64, debug bool) (float64, float64) {
 	var h float64
 	for x < b {
 		h, u, v = jump(x, u, v, h0)
-		fmt.Println("huv:", h, u, v)
 		x = x + h
 		answ = append(answ, &Print{
 			Iter:   iter,
@@ -138,7 +136,6 @@ func rungeKutta(a, b, u, v, h0 float64, debug bool) (float64, float64) {
 func F(ksi float64, D []float64, h float64, alpha, betta, gamma []float64, f, g func(float64, float64, float64) float64) float64 {
 	v := (gamma[0] - alpha[0]*ksi) / betta[0]
 	u, v := rungeKutta(D[0], D[1], ksi, v, h, false)
-	fmt.Println("u,v: ", u, v)
 	return alpha[0]*u + betta[1]*v - gamma[1]
 }
 func main() {
@@ -150,11 +147,11 @@ func main() {
 	gamma := []float64{alpha[0]*uFunc(D[0]) + betta[0]*vFunc(D[0]), alpha[1]*uFunc(D[1]) + betta[0]*vFunc(D[1])}
 	ksiInput := func(ksi float64) (float64, float64) {
 		fKsi := F(ksi, D, h, alpha, betta, gamma, fFunc, gFunc)
-		fmt.Printf("F(ξ: %.2f) = %.2f\n", ksi, fKsi)
+		fmt.Printf("\nF(ξ: %.2f) = %.2f\n", ksi, fKsi)
 		return ksi, fKsi
 	}
 	ksi1, fKsi1 := ksiInput(1)
-	ksiInputIter := -1.0
+	ksiInputIter := -2.0
 	ksi2, fKsi2 := 0.0, 0.0
 	for {
 		ksi2, fKsi2 = ksiInput(ksiInputIter)
@@ -169,9 +166,9 @@ func main() {
 		return F(ksi, FDihotStr.D, FDihotStr.h, FDihotStr.alpha, FDihotStr.betta, FDihotStr.gamma, FDihotStr.f, FDihotStr.g)
 	}
 	ksi := dichotomy(f, ksi1, ksi2, eps/1e+1)
-	fmt.Printf("Поиск корня на отрезке [%.2f,%.2f]\n", math.Min(ksi1, ksi2), math.Max(ksi1, ksi2))
-	fmt.Printf("ξ = %f \t\t F(ξ) = %f", ksi, f(ksi))
-	fmt.Printf("Запуск автоматической стрельбы...")
+	fmt.Printf("\nПоиск корня на отрезке [%.2f,%.2f]\n", math.Min(ksi1, ksi2), math.Max(ksi1, ksi2))
+	fmt.Printf("ξ = %.10f \t\t F(ξ) = %.10f", ksi, f(ksi))
+	fmt.Printf("\nЗапуск автоматической стрельбы...\n")
 	u := ksi
 	v := (gamma[0] - alpha[0]*ksi) / betta[0]
 	u, v = rungeKutta(D[0], D[1], u, v, h, true)
