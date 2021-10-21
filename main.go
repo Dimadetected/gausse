@@ -61,7 +61,7 @@ func jump(x, u, v, h0 float64) (float64, float64, float64) {
 	sU05, sV05 := step(x, u, v, h/2)
 	sU2, sV2 := step(x+h/2, sU05, sV05, h/2)
 	fmt.Println(h, math.Abs(sU1-sU2) > eps, math.Abs(sV1-sV2) > eps, math.Abs(sV1-sV2), sV1, sV2)
-	for math.Abs(sU1-sU2) > eps && math.Abs(sV1-sV2) > eps {
+	for math.Abs(sU1-sU2) > eps || math.Abs(sV1-sV2) > eps {
 		fmt.Println(h, math.Abs(sU1-sU2) > eps, math.Abs(sV1-sV2) > eps)
 		h = h / 2
 		sU1 = sU05
