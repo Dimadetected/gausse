@@ -1,9 +1,15 @@
 package main
 
 import (
+	"encoding/csv"
+	"errors"
 	"fmt"
 	"github.com/rgeoghegan/tabulate"
+	"io"
 	"math"
+	"os"
+	"strconv"
+	"time"
 )
 
 type Print struct {
@@ -72,7 +78,45 @@ func jump(x, u, v, h0 float64) (float64, float64, float64) {
 	}
 	return h, sU1, sV1
 }
+
+func read() {
+	n := time.Now()
+	var msisdnList []int
+
+	file, err := os.Open("num.csv")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	reader.FieldsPerRecord = 1
+	reader.Comment = '#'
+
+	for {
+		line, err := reader.Read()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			} else {
+				panic(err)
+			}
+		}
+
+		i, err := strconv.Atoi(line[0])
+		if err != nil {
+			panic(err)
+		}
+
+		msisdnList = append(msisdnList, i)
+	}
+	fmt.Println(len(msisdnList))
+	fmt.Println(time.Now().Sub(n).Seconds())
+}
+
 func main() {
+	read()
+	return
 	h0 := 0.3
 
 	x0 := 0.0
