@@ -12,8 +12,6 @@ func startMethod2() {
 	a := 0.0
 	b := math.Pi
 
-	gamma := []float64{1, 0}
-
 	N := 32
 	h := (b - a) / float64(N)
 
@@ -38,11 +36,11 @@ func startMethod2() {
 	}
 	B[0] = 1
 	C[0] = -1
-	D[0] = gamma[0] * h
+	D[0] = 1 * h
 
 	A[N] = 1
 	B[N] = -1
-	D[N] = gamma[1] * h
+	D[N] = 0 * h
 
 	y := traditionalSolve(A, B, C, D)
 
