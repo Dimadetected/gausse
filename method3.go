@@ -34,7 +34,7 @@ func startMethod3() {
 		B[i] = -2 + math.Pow(h, 2)*q
 		C[i] = 1 + h/2*p
 	}
-	B[0] = -C[1]*3 + A[0]
+	B[0] = -C[1]*3 + A[1]
 	C[0] = C[1]*4 + B[1]
 	D[0] = 0*(2*h*C[1]) + D[1]
 
@@ -45,6 +45,6 @@ func startMethod3() {
 	y := traditionalSolve(A, B, C, D)
 
 	for i := 0; i < N+1; i++ {
-		fmt.Printf("x[%d] = %.10f\t y[%d] = %.10f\t f(x) = %.10f \t|\t%.1f\n", i, x[i], i, y[i], cos(x[i]), math.Abs(cos(x[i])-y[i]))
+		fmt.Printf("x[%d] = %.10f\t y[%d] = %.10f\t f(x) = %.10f \t|\t%.5f\n", i, x[i], i, y[i], cos(x[i]), math.Abs(cos(x[i])-y[i]))
 	}
 }

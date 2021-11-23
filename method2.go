@@ -36,7 +36,7 @@ func startMethod2() {
 	}
 	B[0] = 1
 	C[0] = -1
-	D[0] = 1 * h
+	D[0] = 0 * h
 
 	A[N] = 1
 	B[N] = -1
@@ -45,6 +45,6 @@ func startMethod2() {
 	y := traditionalSolve(A, B, C, D)
 
 	for i := 0; i < N+1; i++ {
-		fmt.Printf("x[%d] = %.10f\t y[%d] = %.10f\t f(x) = %.10f \t|\t%.1f\n", i, x[i], i, y[i], cos(x[i]), math.Abs(cos(x[i])-y[i]))
+		fmt.Printf("x[%d] = %.10f\t y[%d] = %.10f\t f(x) = %.10f \t|\t%.5f\n", i, x[i], i, y[i], cos(x[i]), math.Abs(cos(x[i])-y[i]))
 	}
 }

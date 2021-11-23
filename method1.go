@@ -56,6 +56,6 @@ func startMethod1() {
 
 	y := traditionalSolve(A, B, C, D)
 	for i := 0; i < N+1; i++ {
-		fmt.Printf("x[%d] = %.10f\t y[%d] = %.10f\t f(x) = %.10f \t|\t%.1f\n", i, x[i], i, y[i], cos(x[i]), math.Abs(cos(x[i])-y[i]))
+		fmt.Printf("x[%d] = %.10f\t y[%d] = %.10f\t f(x) = %.10f \t|\t%.5f\n", i, x[i], i, y[i], cos(x[i]), math.Abs(cos(x[i])-y[i]))
 	}
 }
