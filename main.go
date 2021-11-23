@@ -1,43 +1,47 @@
 package main
 
-import (
-	"fmt"
-	"time"
+import "math"
+
+var (
+	f string = "tx^3+x^2"
 )
 
+func u(x, t float64) float64 {
+	return t*math.Pow(x, 3) + math.Pow(x, 2)
+}
+func psi(x float64) float64 {
+	return math.Pow(x, 2)
+}
+func phi(x, t float64) float64 {
+	return math.Pow(x, 3) - 6*t*x - 2
+}
 func main() {
-	var a string
-	fmt.Println("Введите \n 1)Если нужно обычную матрицу \n 2)Если нужно вырожденную матрицу")
-	fmt.Scan(&a)
-	if a == "1" {
+	h := 0.01
+	tau := 0.03
 
-		m := NewMatrix(5, 5)
-		m.valueRand()
-		fmt.Println("Обычная матрица: ")
-		m.printMatrix("Заполнили матрицу")
-		for j := 0; j < m.cols; j++ {
-			_, maxRow := m.maxColValue(j)
-			m.rowsSwap(j, maxRow)
-			//m.printMatrix("матрица после переставления столбцов")
-			m.toSingleMatrix(j, j)
-			//m.printMatrix("вывод матрицы после прохода столбца")
-		}
-		m.printMatrix("Вывод итоговой матрицы")
+	r := tau / math.Pow(h, 2)
 
-	} else {
-
-		m := NewMatrix(5, 5)
-		m.valueVyrozhd()
-		fmt.Println("Вырожденная матрица: ")
-		m.printMatrix("Заполнили матрицу")
-		for j := 0; j < m.cols; j++ {
-			_, maxRow := m.maxColValue(j)
-			m.rowsSwap(j, maxRow)
-			//m.printMatrix("матрица после переставления столбцов")
-			m.toSingleMatrix(j, j)
-			m.printMatrix("вывод матрицы после прохода столбца")
-		}
-		m.printMatrix("Вывод итоговой матрицы")
+	if r > 0.5 {
+		panic("r <= 0.5. Условие устойчивости не выполнено.")
 	}
-	time.Sleep(time.Second * 10000)
+
+	A := -10.0
+	B := 10.0
+
+	T := 0.5
+
+	var x []float64
+	var t []float64
+
+	for i := A; i < B; i += h {
+		x = append(x, i)
+	}
+
+	for i := 0.0; i < T; i += tau {
+		t = append(t, i)
+	}
+
+	n0 := 5
+	m0 := 5
+	U :=
 }
