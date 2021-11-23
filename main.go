@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/rgeoghegan/tabulate"
+	"github.com/crackcell/gotabulate"
 	"math"
 )
 
@@ -24,11 +24,11 @@ func phi(x, t float64) float64 {
 	return math.Pow(x, 3) - 6*t*x - 2
 }
 func main() {
-	h := 0.01
-	tau := 0.03
+	h := 0.1
+	tau := 0.003
 
 	r := tau / math.Pow(h, 2)
-
+	fmt.Println(r)
 	if r > 0.5 {
 		panic("r <= 0.5. Условие устойчивости не выполнено.")
 	}
@@ -58,15 +58,6 @@ func main() {
 	}
 	U[0] = psi(x)
 
-	layout := &tabulate.Layout{Format: tabulate.GridFormat}
-	table, err := tabulate.Tabulate(answ, layout)
-	if err != nil {
-		panic(err)
-	}
-	if debug {
-		fmt.Println(table)
-	}
-
 	for n := 1; n < n0+1; n++ {
 		for m := m0 - n0 + n; m < m0+n0+1-n; m++ {
 			U[n][m] = r*(U[n-1][m-1]+U[n-1][m+1]) + (1-2*r)*U[n-1][m] + tau*phi(x[m], t[n-1])
@@ -74,4 +65,27 @@ func main() {
 	}
 	fmt.Println("Функция:", f)
 
+	var printArr [][]string
+	var header []string
+
+	for m := m0 - n0; m < m0+n0+1; m++ {
+		header = append(header, fmt.Sprintf("m=%d", m))
+	}
+	printArr = append(printArr, header)
+	for i := 0; i < n0+1; i++ {
+		var strArr []string
+		for j := m0 - n0; j < m0+n0+1; j++ {
+			strArr = append(strArr, fmt.Sprintf("%.7f", U[i][j]))
+		}
+		printArr = append(printArr, strArr)
+	}
+	tabulator := gotabulate.NewTabulator()
+	tabulator.SetFirstRowHeader(true)
+	tabulator.SetFormat("orgtbl")
+	fmt.Print(
+		tabulator.Tabulate(
+			printArr,
+		))
+	fmt.Println("Точное решение в выбранном узле:", u(x[m0], t[n0]))
+	fmt.Println("Погрешностьвычислений :", math.Abs(u(x[m0], t[n0]))-U[n0][m0])
 }
