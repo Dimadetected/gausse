@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/rgeoghegan/tabulate"
 	"math"
 )
 
@@ -56,6 +57,15 @@ func main() {
 		U = append(U, u)
 	}
 	U[0] = psi(x)
+
+	layout := &tabulate.Layout{Format: tabulate.GridFormat}
+	table, err := tabulate.Tabulate(answ, layout)
+	if err != nil {
+		panic(err)
+	}
+	if debug {
+		fmt.Println(table)
+	}
 
 	for n := 1; n < n0+1; n++ {
 		for m := m0 - n0 + n; m < m0+n0+1-n; m++ {
