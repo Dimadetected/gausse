@@ -6,15 +6,13 @@ import (
 	"math"
 )
 
-var (
-	f string = "tx^3+x^2"
-)
+const f = "tx^3+x^2"
 
 func u(x, t float64) float64 {
 	return t*math.Pow(x, 3) + math.Pow(x, 2)
 }
 func psi(x []float64) []float64 {
-	f := []float64{}
+	var f []float64
 	for i := range x {
 		f = append(f, math.Pow(x[i], 2))
 	}
@@ -23,15 +21,12 @@ func psi(x []float64) []float64 {
 func phi(x, t float64) float64 {
 	return math.Pow(x, 3) - 6*t*x - 2
 }
+
 func main() {
 	h := 0.1
 	tau := 0.003
 
 	r := tau / math.Pow(h, 2)
-	fmt.Println(r)
-	if r > 0.5 {
-		panic("r <= 0.5. Условие устойчивости не выполнено.")
-	}
 
 	A := -10.0
 	B := 10.0
@@ -49,7 +44,7 @@ func main() {
 		t = append(t, i)
 	}
 
-	n0 := 5
+	n0 := 4
 	m0 := 5
 	U := make([][]float64, 0)
 	for i := 0; i < len(t); i++ {
@@ -58,10 +53,31 @@ func main() {
 	}
 	U[0] = psi(x)
 
+	a := make([]float64, len(x))
+	b := make([]float64, len(x))
+	c := make([]float64, len(x))
+	d := make([]float64, len(x))
+
 	for n := 1; n < n0+1; n++ {
+		a[1] = 0
+		b[1] = 2*r + 1
+		c[1] = -r
+		d[1] = tau * phi(x[0],t[n]) + U[n-1][0]
+
+		a[len(a)-1] = -r
+		b[len(b)-1] = 2 * r +1
+		c[len(c)-1] = 0
+		d[len(d)-1] = tau * phi(x[len(x)-1],t[n]) + U[n-1][len(U[n-1])-1] + r * (t[n]+1)
+
 		for m := m0 - n0 + n; m < m0+n0+1-n; m++ {
-			U[n][m] = r*(U[n-1][m-1]+U[n-1][m+1]) + (1-2*r)*U[n-1][m] + tau*phi(x[m], t[n-1])
+			a[m] = -r
+			b[m] = 2 * r +1
+			c[m] = -r
+			d[m] = tau * phi(x[m],t[n]) + U[n-1][m]
 		}
+		l :=
+		U[n][1] = r*(U[n-1][m-1]+U[n-1][m+1]) + (1-2*r)*U[n-1][m] + tau*phi(x[m], t[n-1])
+
 	}
 	fmt.Println("Функция:", f)
 
